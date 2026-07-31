@@ -1,0 +1,125 @@
+﻿<Window x:Class="ConstructionRegistry.Views.AddKontragentView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ConstructionRegistry.Views"
+        mc:Ignorable="d"
+          Style="{StaticResource WindowStyle}"
+        xmlns:vm="clr-namespace:ConstructionRegistry.ViewModels"
+        d:DataContext="{d:DesignInstance Type=vm:KontragentAddVM}"
+        AllowsTransparency="True"
+        ResizeMode="CanResizeWithGrip"
+        Title="AddKontragentView" Height="475" Width="800">
+
+    <Window.DataContext>
+      
+        <vm:KontragentAddVM x:Name="KontragentAddVM"></vm:KontragentAddVM>
+    </Window.DataContext>
+
+    <StackPanel Orientation="Vertical" Background="Transparent" Grid.RowSpan="2">
+        <DockPanel  Background="Transparent" HorizontalAlignment ="Stretch" Height="60" VerticalAlignment="Center">
+            <StackPanel  Margin="20,15,20,0" Orientation="Horizontal"  HorizontalAlignment ="Left" VerticalAlignment="Top">
+                <Image Source ="pack://application:,,,/Resources/logoNGM.png" />
+
+            </StackPanel>
+            <StackPanel  Margin="0,15,20,0" Orientation="Horizontal"  HorizontalAlignment ="Right" VerticalAlignment="Top">
+                <Button Style="{StaticResource ResourceKey=MinimizeBtnStyle}"
+           Command="{Binding WindowMinimizeCommand}"
+           />
+                <Button Style="{StaticResource ResourceKey=MaximizeBtnStyle}"
+           Command="{Binding WindowMaximizeCommand}"
+           />
+                <Button Style="{StaticResource ResourceKey=CloseWindowBtnStyle}"
+           Command="{Binding CloseWindowCommand}"
+           />
+            </StackPanel>
+        </DockPanel>
+
+
+
+
+        <StackPanel Orientation="Vertical" Background="White" Margin ="20, 15, 20 , 20">
+
+
+
+            <Label
+                Height="50"
+                HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                    Content="Введите данные контрагента" 
+                />
+
+            <UniformGrid Rows="5" Columns="2"  
+                        
+                         HorizontalAlignment="Left">
+
+
+                <Label
+                     VerticalAlignment="Center"
+                    Content="Наименование контрагента" 
+                />
+                <TextBox 
+                    Text="{Binding KontragentName}"
+                    Width="350"
+                    Height="25"
+                    HorizontalAlignment="Right"
+                    BorderBrush="Aqua"
+                />
+                <Label
+                     VerticalAlignment="Center"
+                    Content="Краткое наименование контрагента" 
+                />
+                <TextBox
+                          Text="{Binding KontragentShortName}"
+                   
+                    Width="350"
+                    Height="25"
+                    HorizontalAlignment="Right"
+                    BorderBrush="Aqua"
+                />
+                <Label
+                     VerticalAlignment="Center"
+                    Content="Адрес" 
+                />
+                <TextBox
+                     Text="{Binding KontragentAdress}"
+                    Width="350"
+                    Height="25"
+                    HorizontalAlignment="Right"
+                    BorderBrush="Aqua"
+                />
+
+                <Label
+                     VerticalAlignment="Center"
+                    Content="ИНН" 
+                />
+                <TextBox 
+                         PreviewTextInput="NumberValidationTextBox"
+                     Text="{Binding KontragenINN}"
+                    Width="350"
+                    Height="25"
+                    HorizontalAlignment="Right"
+                    BorderBrush="Aqua" TextChanged="TextBox_TextChanged"
+                />
+                <Label
+                     VerticalAlignment="Center"
+                    Content="Плательщик НДС" 
+                />
+                <CheckBox 
+                    PreviewTextInput="NumberValidationTextBox"
+                     Margin="0, 20"
+                    
+                />
+
+            </UniformGrid>
+            <Button
+                    Content="Создать" 
+                    Width="80"
+                    Height ="40" 
+                    Command="{Binding AddNewKontragent}"
+                />
+        </StackPanel>
+    </StackPanel>
+
+</Window>

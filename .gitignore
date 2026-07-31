@@ -1,0 +1,23 @@
+# Visual Studio / IDE
+.vs/
+*.user
+*.suo
+
+# Build results
+bin/
+obj/
+
+# NuGet
+packages.config
+
+# Configs with secrets
+appsettings.json
+appsettings.*.json
+
+# Office docs (если это локальные шаблоны/тестовые файлы)
+*.docx
+*.xlsx
+
+# OS files
+.DS_Store
+Thumbs.db

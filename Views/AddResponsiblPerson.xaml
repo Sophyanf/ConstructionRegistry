@@ -1,0 +1,105 @@
+﻿<Window x:Class="ConstructionRegistry.Views.AddResponsiblPerson"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ConstructionRegistry.Views"
+        xmlns:vm="clr-namespace:ConstructionRegistry.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vm:ResponsiblPersonVM}"
+        Style="{StaticResource WindowStyle}"
+        Width="600"
+        Height="500">
+
+    <Window.DataContext>
+        <vm:ResponsiblPersonVM x:Name="ResponsiblPersonVM" />
+    </Window.DataContext>
+
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Vertical" Background="Transparent" Grid.RowSpan="2">
+            <DockPanel Background="Transparent" HorizontalAlignment="Stretch" Height="60" VerticalAlignment="Center">
+                <StackPanel Margin="20,15,20,0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Image Source="pack://application:,,,/Resources/logoNGM.png" />
+                </StackPanel>
+                <StackPanel Margin="0,15,20,0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                    <!-- Исправлено: убрали ResourceKey= -->
+                    <Button Style="{StaticResource MinimizeBtnStyle}"
+                            Command="{Binding WindowMinimizeCommand}" />
+                    <Button Style="{StaticResource MaximizeBtnStyle}"
+                            Command="{Binding WindowMaximizeCommand}" />
+                    <Button Style="{StaticResource CloseWindowBtnStyle}"
+                            Command="{Binding CloseWindowCommand}" />
+                </StackPanel>
+            </DockPanel>
+
+            <StackPanel Orientation="Vertical" Margin="20,10,20,20" Background="White">
+                <Label Height="30" Margin="0"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Content="Данные должностного лица" />
+
+                <StackPanel Orientation="Horizontal" Height="40" Margin="0,10">
+                    <Label Width="200"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           Content="ФИО" />
+                    <TextBox Text="{Binding PersonFIO}"
+                             Width="320" Height="25" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Height="40">
+                    <Label Width="200" HorizontalAlignment="Left"
+                           Content="Организация" />
+
+                    <ComboBox Width="200" Height="25"
+                              ItemsSource="{Binding Kontragents}" 
+                              DisplayMemberPath="KontragentShortName"
+                              SelectedItem="{Binding SelectKontragent}"
+                              BorderBrush="Aqua"  
+                              SelectedIndex="0">
+                    </ComboBox>
+
+                    <Button Width="90" Height="30" Margin="30,0"
+                            HorizontalAlignment="Center"  
+                            VerticalAlignment="Center"
+                            Content="Создать"
+                            Command="{Binding AddNewKontragent}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Height="40">
+                    <Label Width="200" HorizontalAlignment="Left"
+                           Content="Должность" />
+                    <TextBox Width="320" Height="25"
+                             Text="{Binding PersonPost}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Height="40">
+                    <Label Width="200" HorizontalAlignment="Left"
+                           Content="Документ-основание" />
+                    <TextBox Width="320" Height="25"
+                             Text="{Binding PersonDocument}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <Label Width="200" Content="Функции" />
+                    <TextBox Width="320" Height="75"
+                             Text="{Binding PersonFunctions}" />
+                </StackPanel>
+
+                <Button Content="Добавить" 
+                        Margin="0,0,0,20"
+                        Width="90" Height="40" 
+                        Command="{Binding AddNewReponsiblPersen}" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
