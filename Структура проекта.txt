@@ -1,0 +1,45 @@
+ecutiveDocumentation/
+├── src/
+│   ├── ConstructionRegistry/                 # основной проект WPF
+│   │   ├── App.xaml, App.xaml.cs             # точка входа WPF
+│   │   ├── MainWindow.xaml, MainWindow.xaml.cs
+│   │   │
+│   │   ├── Models/                         # POCO-классы (сущности EF)
+│   │   │   ├── Kontragent.cs
+│   │   │   ├── ContractCustomer.cs
+│   │   │   ├── ConstructionObject.cs
+│   │   │   └── ResponsiblPerson.cs
+│   │   │
+│   │   ├── Services/                       # ИНТЕРФЕЙСЫ сервисов (контракты)
+│   │   │   ├── IKontragentService.cs
+│   │   │   ├── IContractCustomerService.cs
+│   │   │   ├── IConstructionObjectService.cs
+│   │   │   └── IResponsiblPersonService.cs
+│   │   │
+│   │   ├── Services.Impl/                  # РЕАЛИЗАЦИИ сервисов (EF Core)
+│   │   │   ├── KontragentService.cs
+│   │   │   ├── ContractCustomerService.cs
+│   │   │   ├── ConstructionObjectService.cs
+│   │   │   └── ResponsiblPersonService.cs
+│   │   │
+│   │   ├── ViewModels/                     # логика UI (MVVM)
+│   │   │   ├── BaseViewModel.cs
+│   │   │   ├── ObjectAddViewVM.cs
+│   │   │   ├── KontragentAddVM.cs
+│   │   │   ├── ContractCustomerAddVM.cs
+│   │   │   └── ResponsiblPersonVM.cs
+│   │   │
+│   │   ├── Views/                          # XAML-окна и UserControl
+│   │   │   ├── ObjectAddView.xaml, .xaml.cs
+│   │   │   ├── AddKontragentView.xaml, .xaml.cs
+│   │   │   └── ...
+│   │   │
+│   │   ├── Data/                           # контекст БД и миграции
+│   │   │   ├── AppDbContext.cs
+│   │   │   └── Migrations/                 # миграции EF Core
+│   │   │       ├── ...
+│   │   │
+│   │   └── Program.cs                      # регистрация зависимостей (DI)
+│   │
+│   └── ConstructionRegistry.Tests/          # тесты (если есть)
+└── ...

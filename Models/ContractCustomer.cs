@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ConstructionRegistry.Models
 {
-    public class Contract
+    public class ContractCustomer
     {
         public int Id { get; set; }
-        public string ContractNumber { get; set; }
-        public DateTime ContractData { get; set; }
+        public string ContractCustomerNumber { get; set; }
+        public DateTime ContractCustomerData { get; set; }
         public Kontragent Kontragent { get; set; }
         public ICollection<ConstructionObject> ConstructionObjects { get; set; }
     }

@@ -11,7 +11,7 @@ namespace ConstructionRegistry.Models
     {
         public int ID { get; set; }    
         public string ObjectName { get; set; } 
-        public Adress? ObjectAdress { get; set; }     //связь 1:1
+        public Address? ObjectAddress { get; set; }     //связь 1:1
         public Kontragent ConstructionOrganization { get; set; } //Подрядчик НГМ //связь 1:1
         public Kontragent? ConstructionOrganizationSub { get; set; } //Субподрядчик //связь 1:1
         public Kontragent Customer { get; set; } //Заказчик //связь 1:1
@@ -28,8 +28,8 @@ namespace ConstructionRegistry.Models
         public OriginDocumentStatus OriginDocumentsSub { get; set;}
         public int? PaymentInvoice { get; set; } // счет на оплату
         public int? Invoice { get; set; } // счет-фактура
-        public Contract Contract { get; set; }
-        public double SubcontractingCoefficients { get; set; }
+        public ContractCustomer ContractCustomer { get; set; }
+        public double SubContractCustomeringCoefficients { get; set; }
 
     }
 }

@@ -1,10 +1,5 @@
-﻿using ConstructionRegistry.Enums;
-using ConstructionRegistry.Models;
-using ConstructionRegistry.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using ConstructionRegistry.Models;
+using ConstructionRegistry.Services;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -12,66 +7,74 @@ namespace ConstructionRegistry.ViewModels
 {
     public class KontragentAddVM : BaseViewModel
     {
-        public ActionCommand AddNewKontragent { get; set; }
+        private readonly IKontragentService _kontragentService;
 
-        private String kontragentName;
-        public String KontragentName
+        public KontragentAddVM(IKontragentService kontragentService)
         {
-            get => kontragentName;
-            set => UpdateValue(ref kontragentName, value);
+            _kontragentService = kontragentService;
+            AddNewKontragent = new ActionCommand(async _ => await AddKontragentAsync());
         }
 
-        private String kontragentShortName;
-        public String KontragentShortName
+        private string _name = string.Empty;
+        public string KontragentName
         {
-            get => kontragentShortName;
-            set => UpdateValue(ref kontragentShortName, value);
-
+            get => _name;
+            set => UpdateValue(ref _name, value);
         }
 
-        private String kontragentINN;
-        public String KontragenINN
+        private string _shortName = string.Empty;
+        public string KontragentShortName
         {
-            get => kontragentINN; 
-            set => UpdateValue(ref kontragentINN, value);
-         
+            get => _shortName;
+            set => UpdateValue(ref _shortName, value);
         }
 
-        private Adress kontragentAdress;
-        public Adress KontragentAdress
+        private string _inn = string.Empty;
+        // Валидация: только цифры или пусто
+        public string KontragentINN
         {
-            get => kontragentAdress;
-            set => UpdateValue(ref kontragentAdress, value);
-        }
-
-        private bool rateNDS;
-        public bool RateNDS
-        {
-            get => rateNDS;
-            set => UpdateValue(ref rateNDS, value);
-        }
-
-        private async void AddKontragentAsync()
-        {
-            Kontragent kontragent = new Kontragent()
+            get => _inn;
+            set
             {
-                    KontragentName = this.kontragentName,
-                    KontragentShortName = this.KontragentShortName,
-                    KontragentAdress = this.kontragentAdress,
-                    KontragentINN = this.kontragentINN,
-                    NDSRate = this.rateNDS
+                if (string.IsNullOrEmpty(value) || long.TryParse(value, out _))
+                    UpdateValue(ref _inn, value);
+            }
+        }
+
+        private bool _isVatPayer;
+        public bool IsVatPayer
+        {
+            get => _isVatPayer;
+            set => UpdateValue(ref _isVatPayer, value);
+        }
+
+        public ActionCommand AddNewKontragent { get; }
+
+        private async Task AddKontragentAsync()
+        {
+            var newKontragent = new Kontragent
+            {
+                KontragentName = KontragentName,
+                KontragentShortName = KontragentShortName,
+                KontragentINN = KontragentINN,
+
+                // Адрес НЕ присваиваем здесь — он будет заполнен позже через сервис парсинга
+                KontragentAddress = null,
+
+                NDSRate = IsVatPayer
             };
 
-            if (await dataObjAdd.AddKontragentAsync(kontragent) == false)
+            try
             {
-                MessageBox.Show("Ошибка!!! Проверьте категорию");
-            }
-            else Application.Current.Windows.OfType<Window>().SingleOrDefault(y => y.IsActive).Close();
-        }
+                await _kontragentService.AddAsync(newKontragent);
+                MessageBox.Show("Контрагент успешно добавлен! Адрес будет обработан сервисом парсинга.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
-        public KontragentAddVM () // конструктор
-        {
-            AddNewKontragent = new ActionCommand(x => AddKontragentAsync());
+                // Тут можно добавить логику: закрыть окно, очистить поля и т.п.
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

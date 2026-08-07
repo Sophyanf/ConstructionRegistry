@@ -1,31 +1,29 @@
-﻿using ConstructionRegistry.Controllers;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Window = System.Windows.Window;
+﻿using ConstructionRegistry.Services;
+using ConstructionRegistry.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 
-namespace ConstructionRegistry.Views {
-    /// <summary>
-    /// Логика взаимодействия для AddResponsiblPerson.xaml
-    /// </summary>
-    public partial class AddResponsiblPerson : Window
+namespace ConstructionRegistry.Views
+{
+    public partial class AddResponsiblPerson : BaseWindowView
     {
-        //private DataObjectController dataObj = DataObjectController.Instance;
         public AddResponsiblPerson()
         {
             InitializeComponent();
 
-        }
+            var sp = App.ServiceProvider;
 
+            // Получаем сервисы ТОЧНО в порядке, который требует конструктор VM
+            var responsiblPersonService = sp.GetRequiredService<IResponsiblPersonService>();
+            var kontragentService = sp.GetRequiredService<IKontragentService>();
 
-        private void OnDragMoveWindow(object sender, MouseButtonEventArgs e)
-        {
-            DragMove();
+            // Создаём VM с правильными аргументами
+            var vm = new ResponsiblPersonVM(
+                responsiblPersonService,
+                kontragentService
+            );
+
+            DataContext = vm;
         }
     }
 }

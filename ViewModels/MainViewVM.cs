@@ -1,56 +1,122 @@
-﻿using ConstructionRegistry.Controllers;
-using ConstructionRegistry.Models;
+﻿using ConstructionRegistry.Models;
+using ConstructionRegistry.Services;
 using ConstructionRegistry.Views;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using Application = System.Windows.Application;
-using Window = System.Windows.Window;
 
 namespace ConstructionRegistry.ViewModels
 {
-   public class MainViewVM : BaseViewModel
+    public class MainViewVM : BaseViewModel
     {
-     
-        public ActionCommand AddNewObjectDB { get; set; }
-        public ActionCommand AddPersonDB { get; set; }
-        public ActionCommand RemoveObjectDB { get; set; }
+        private readonly IConstructionObjectService _objectService;
+        private readonly IResponsiblPersonService _personService;
 
-        public MainViewVM()
+        // Эти коллекции должны быть публичными свойствами, чтобы биндились в XAML
+        public ObservableCollection<ConstructionObject> ObjectsList { get; } = new();
+        public ObservableCollection<ResponsiblPerson> PersonsList { get; } = new();
+
+        public ConstructionObject? SelectObject { get; set; } // привязка SelectedItem в DataGrid
+        public ResponsiblPerson? SelectPerson { get; set; }
+
+        public ActionCommand AddNewObjectDB { get; }
+        public ActionCommand AddPersonDB { get; }
+        public ActionCommand RemoveObjectDB { get; }
+
+        public MainViewVM(
+            IConstructionObjectService objectService,
+            IResponsiblPersonService personService)
         {
-            AddNewObjectDB = new ActionCommand(x => AddNewObject());
-            AddPersonDB = new ActionCommand(x => AddPerson());
-            RemoveObjectDB = new ActionCommand(x => RemoveObject());
-            ObjectsList = new ObservableCollection<ConstructionObject>();
-            LoadObjects();
-            PersonsList = new ObservableCollection<ResponsiblPerson>();
-            LoadPersens();
+            _objectService = objectService;
+            _personService = personService;
+
+            AddNewObjectDB = new ActionCommand(_ => AddNewObject());
+            AddPersonDB = new ActionCommand(_ => AddPerson());
+            RemoveObjectDB = new ActionCommand(_ => RemoveObject());
+
+            // Инициализация коллекций уже сделана выше через инициализатор
+            LoadObjectsAsync();
+            LoadPersonsAsync();
         }
 
-        private void RemoveObject()
+        private async void LoadObjectsAsync()
         {
-            dataObjRemove.RemoveObject(SelectObject);
-            MessageBox.Show(SelectObject.ObjectName);
-            //windowToOpen.Closing += (o, args) => { };
+            try
+            {
+                var list = await _objectService.GetAllWithCustomerAsync();
+                ObjectsList.Clear();
+                foreach (var item in list) ObjectsList.Add(item);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки объектов: {ex.Message}");
+            }
         }
 
-        private void AddPerson()
+        private async void LoadPersonsAsync()
         {
-            AddResponsiblPerson person = new AddResponsiblPerson();
-            person.ShowDialog();
+            try
+            {
+                // Если у сервиса есть метод GetAllAsync — используй его.
+                // Здесь я делаю заглушку: если такого метода нет, добавь его в IResponsiblPersonService
+                // и реализацию в ResponsiblPersonService аналогично другим сервисам.
+                var list = await _personService.GetAllByKontragentAsync(0); // 0 — заглушка, если нужен фильтр
+                PersonsList.Clear();
+                foreach (var item in list) PersonsList.Add(item);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки ответственных лиц: {ex.Message}");
+            }
         }
 
         private void AddNewObject()
         {
-            AddObjectView objectView = new AddObjectView();
-            objectView.ShowDialog();
+            // В MVVM не принято делать new View прямо в ViewModel.
+            // Самый простой вариант без отдельного NavigationService — через событие или callback.
+            // Для твоего текущего уровня — можно оставить вызов ShowDialog через локальную переменную,
+            // но вынести его в отдельный метод или сервис.
+            var addObjectWindow = new AddObjectView();
+            addObjectWindow.ShowDialog();
+
+            // После закрытия окна нужно обновить список
+            LoadObjectsAsync();
+        }
+
+        private void AddPerson()
+        {
+            var addResponsiblPersonWindow = new Views.AddResponsiblPerson();
+            addResponsiblPersonWindow.ShowDialog();
+            LoadPersonsAsync();
+        }
+
+        private async void RemoveObject()
+        {
+            if (SelectObject == null)
+            {
+                MessageBox.Show("Выберите объект для удаления.");
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Вы уверены, что хотите удалить объект \"{SelectObject.ObjectName}\"?",
+                "Подтверждение удаления",
+                MessageBoxButton.YesNo);
+
+            if (result != MessageBoxResult.Yes) return;
+
+            try
+            {
+                await _objectService.RemoveAsync(SelectObject.ID);
+                MessageBox.Show("Объект удалён.");
+                LoadObjectsAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Не удалось удалить объект: {ex.Message}");
+            }
         }
     }
 }

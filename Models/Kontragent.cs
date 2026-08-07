@@ -12,11 +12,11 @@ namespace ConstructionRegistry.Models
         public string KontragentName { get; set; }
         public string KontragentShortName { get; set; }
         public string KontragentINN { get; set; }
-        public Adress? KontragentAdress { get; set; }
+        public Address? KontragentAddress { get; set; }
         public bool NDSRate { get; set; }
         public ICollection<ConstructionObject> ConstructionObjects { get; set; } = new List<ConstructionObject>();
         public ICollection<ResponsiblPerson> ResponsiblPersons { get; set; } = new List <ResponsiblPerson>();
-        public ICollection<Contract> Constructs { get; set; }
+        public ICollection<ContractCustomer> Constructs { get; set; }
 
         public override string ToString()
         {

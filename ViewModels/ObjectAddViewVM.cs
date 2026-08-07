@@ -1,240 +1,215 @@
-﻿using ConstructionRegistry.Controllers;
-using ConstructionRegistry.Enums;
+﻿using ConstructionRegistry.Enums;
 using ConstructionRegistry.Models;
-using ConstructionRegistry.Views;
+using ConstructionRegistry.Services;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.AccessControl;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using Application = System.Windows.Application;
-using Window = System.Windows.Window;
 
-namespace ConstructionRegistry.ViewModels   // <-- только один раз
+namespace ConstructionRegistry.ViewModels
 {
     public class ObjectAddViewVM : BaseViewModel
-        {
+    {
+        private readonly IConstructionObjectService _objectService;
+        private readonly IKontragentService _kontragentService;
+        private readonly IContractCustomerService _contractService;
+        private readonly IResponsiblPersonService _personService;
+
+        public ActionCommand AddNewConctrObject { get; }
+
         #region Properties
 
-            // --- ObjectName ---
-            private string objName = string.Empty;
-            public string ObjName
-            {
-                get => objName;
-                set => UpdateValue(ref objName, value);
-            }
-
-            // --- Status ---
-            private StatusOfObject status = StatusOfObject.ApplicationOnly;
-            public StatusOfObject Status 
-            {
-                get => status;
-                set => UpdateValue(ref status, value);
-            }
-
-            // --- CostOfObject ---
-            private double сostOfObject;
-                public double CostOfObject
-            {
-                    get => сostOfObject;
-                    set => UpdateValue(ref сostOfObject, value);
-                }
-
-            // --- DateOfApplication ---
-            private DateTime startDate = DateTime.Now.AddDays(30);
-            public DateTime StartDate
+        private string _objName = string.Empty;
+        public string ObjName
         {
-                get => startDate;
-                set => UpdateValue(ref startDate, value);
-            }
+            get => _objName;
+            set => UpdateValue(ref _objName, value);
+        }
 
-            // --- EndDate ---
-            private DateTime endDate = DateTime.Now.AddDays(30);
-            public DateTime EndDate
-            {
-                get => endDate;
-                set => UpdateValue(ref endDate, value);
-            }
+        private StatusOfObject _status = StatusOfObject.ApplicationOnly;
+        public StatusOfObject Status
+        {
+            get => _status;
+            set => UpdateValue(ref _status, value);
+        }
 
-            // --- constructionOrganizationSub ---
-            private Kontragent? constructionOrganizationSub;
-            public Kontragent? ConstructionOrganizationSub
-            {
-                get => constructionOrganizationSub;
-                set => UpdateValue(ref constructionOrganizationSub, value);
-            }
+        private double _costOfObject;
+        public double CostOfObject
+        {
+            get => _costOfObject;
+            set => UpdateValue(ref _costOfObject, value);
+        }
 
-            private ObservableCollection<Contract> contractsList = new ObservableCollection<Contract>();
-            public ObservableCollection<Contract> ContractsList
-            {
-                get => contractsList;
-                set => UpdateValue(ref contractsList, value);
-            }
+        private DateTime _startDate = DateTime.Now.AddDays(30);
+        public DateTime StartDate
+        {
+            get => _startDate;
+            set => UpdateValue(ref _startDate, value);
+        }
 
-            // Выбранный контракт (то, что пойдёт в ConstructionObject)
-            private Contract? contract;
-            public Contract? Contract
-            {
-                get => contract;
-                set => UpdateValue(ref contract, value);
-            }
+        private DateTime _endDate = DateTime.Now.AddDays(30);
+        public DateTime EndDate
+        {
+            get => _endDate;
+            set => UpdateValue(ref _endDate, value);
+        }
 
-            private double subcontractingCoefficients;
-            public double SubcontractingCoefficients
-               {
-                get => subcontractingCoefficients;
-                set => UpdateValue(ref subcontractingCoefficients, value);
-                }
+        private Kontragent? _constructionOrganizationSub;
+        public Kontragent? ConstructionOrganizationSub
+        {
+            get => _constructionOrganizationSub;
+            set => UpdateValue(ref _constructionOrganizationSub, value);
+        }
 
-            private String comment;
-            public String Comment
-            {
-                get => comment;
-                set => UpdateValue(ref comment, value);
-            }
+        private double _subContractCustomeringCoefficients;
+        public double SubContractCustomeringCoefficients
+        {
+            get => _subContractCustomeringCoefficients;
+            set => UpdateValue(ref _subContractCustomeringCoefficients, value);
+        }
 
-        private OriginDocumentStatus originDocuments;
+        private string _comment = string.Empty;
+        public string Comment
+        {
+            get => _comment;
+            set => UpdateValue(ref _comment, value);
+        }
+
+        private OriginDocumentStatus _originDocuments;
         public OriginDocumentStatus OriginDocuments
         {
-            get => originDocuments;
-            set => UpdateValue(ref originDocuments, value);
+            get => _originDocuments;
+            set => UpdateValue(ref _originDocuments, value);
         }
 
-        private OriginDocumentStatus originDocumentsSub;
+        private OriginDocumentStatus _originDocumentsSub;
         public OriginDocumentStatus OriginDocumentsSub
         {
-            get => originDocumentsSub;
-            set => UpdateValue(ref originDocumentsSub, value);
+            get => _originDocumentsSub;
+            set => UpdateValue(ref _originDocumentsSub, value);
         }
 
-        private ResponsiblPerson responsiblPerson;
-        public ResponsiblPerson ResponsiblPerson
+        private ResponsiblPerson? _responsiblPerson;
+        public ResponsiblPerson? ResponsiblPerson
         {
-            get => responsiblPerson;
-            set => UpdateValue(ref responsiblPerson, value);
+            get => _responsiblPerson;
+            set => UpdateValue(ref _responsiblPerson, value);
         }
+
+        // Эти свойства обычно приходят из BaseViewModel, но можно продублировать сигнатуру
+        public ObservableCollection<Kontragent> Kontragents { get; set; } = new();
+        public ObservableCollection<ContractCustomer> ContractCustomersList { get; set; } = new();
+
+        public Kontragent? Customer { get; set; } // выбранный заказчик
+        public ContractCustomer? SelectContractCustomer { get; set; } // выбранный договор
 
         #endregion
 
-        #region Commands
-
-        public ActionCommand AddNewConctrObject { get; set; }
-
-            public ObjectAddViewVM()
-            {
-                AddNewConctrObject = new ActionCommand(x => AddNewObjectAsync());
-
-                Kontragents = new ObservableCollection<Kontragent>();
-                LoadKontragents();
-
-                ContractsList = new ObservableCollection<Contract>();
-                LoadContracts();
-
-            }
-
-            #endregion
-
-        private double SpendingOfObject (double costOfObject)
+        public ObjectAddViewVM(
+            IConstructionObjectService objectService,
+            IKontragentService kontragentService,
+            IContractCustomerService contractService,
+            IResponsiblPersonService personService)
         {
-            double cost = costOfObject * subcontractingCoefficients;
-            if (!Customer.NDSRate)
+            _objectService = objectService;
+            _kontragentService = kontragentService;
+            _contractService = contractService;
+            _personService = personService;
+
+            AddNewConctrObject = new ActionCommand(_ => AddNewObjectAsync());
+
+            LoadKontragentsAsync();
+            LoadContractCustomersListAsync();
+        }
+
+        private async void LoadKontragentsAsync()
+        {
+            var list = await _kontragentService.GetAllAsync();
+            Kontragents = new ObservableCollection<Kontragent>(list);
+        }
+
+        private async void LoadContractCustomersListAsync()
+        {
+            // Если Customer уже выбран, можно фильтровать по нему
+            if (Customer != null)
             {
-                if (endDate.Year < 2026) cost = costOfObject * 100/120 * subcontractingCoefficients;
-                else cost = costOfObject * 100 / 122 * subcontractingCoefficients;
+                var list = await _contractService.GetByKontragentIdAsync(Customer.ID);
+                ContractCustomersList = new ObservableCollection<ContractCustomer>(list);
+            }
+        }
+
+        private double CalculateSpendingOfObject(double costOfObject)
+        {
+            double cost = costOfObject * _subContractCustomeringCoefficients;
+
+            if (!Customer?.NDSRate ?? true)
+            {
+                if (_endDate.Year < 2026)
+                    cost = costOfObject * 100.0 / 120.0 * _subContractCustomeringCoefficients;
+                else
+                    cost = costOfObject * 100.0 / 122.0 * _subContractCustomeringCoefficients;
             }
             return cost;
         }
 
-            private void LoadContracts()
+        private async void AddNewObjectAsync()
+        {
+            if (string.IsNullOrWhiteSpace(ObjName))
             {
-                // Здесь ты подключаешь свою логику загрузки (EF6 / EF Core / репозиторий)
-                // Пример для EF6 (т.к. ты работал с EF6):
-                using (var ctx = new AppDbContext())
-                {
-                    var items = ctx.Contracts
-                        .OrderBy(c => c.ContractNumber)
-                        .ToList();
-
-                    ContractsList.Clear();
-                    foreach (var c in items)
-                    {
-                        ContractsList.Add(c);
-                    }
-                }
+                MessageBox.Show("Введите наименование объекта.");
+                return;
             }
 
-            private async Task AddNewObjectAsync()
+            if (Customer == null)
             {
-                if (string.IsNullOrWhiteSpace(ObjName))
-                {
-                    MessageBox.Show("Введите наименование объекта.");
-                    return;
-                }
+                MessageBox.Show("Выберите заказчика из списка.");
+                return;
+            }
 
-                if (Customer == null)
-                {
-                    MessageBox.Show("Выберите заказчика из списка.");
-                    return;
-                }
+            // Получаем основную организацию по ИНН (лучше вынести в сервис или конфиг)
+            var constructionOrg = await _kontragentService.GetByInnAsync("5321171110");
+            if (constructionOrg == null)
+            {
+                MessageBox.Show("Не найдена основная строительная организация (ИНН 5321171110).");
+                return;
+            }
 
             var newObject = new ConstructionObject
             {
                 ObjectName = ObjName,
-                //ObjectAdress из ИИ
-                ConstructionOrganization = dataObjGet.GetKontragent("5321171110"),
+                ConstructionOrganization = constructionOrg,
                 ConstructionOrganizationSub = ConstructionOrganizationSub,
                 Customer = Customer,
-                DateOfApplication = startDate,
-                EndDate = EndDate,
-                CostOfObject = сostOfObject,
-                SpendingOfObject = SpendingOfObject(сostOfObject),
-                //KadastrID = из ИИ
-                //TypeOfObject = из ИИ
-                CustomerOrgRespPerson = responsiblPerson,
-                Status = Status,
-                Comment = comment,
-                OriginDocuments = OriginDocuments,
-                OriginDocumentsSub = OriginDocumentsSub,
-                //PaymentInvoice = из ИИ 1C
-                //Invoice = из ИИ 1C
-                Contract = Contract,
-                SubcontractingCoefficients = SubcontractingCoefficients,
+                DateOfApplication = _startDate,
+                EndDate = _endDate,
+                CostOfObject = _costOfObject,
+                SpendingOfObject = CalculateSpendingOfObject(_costOfObject),
+                CustomerOrgRespPerson = _responsiblPerson,
+                Status = _status,
+                Comment = _comment,
+                OriginDocuments = _originDocuments,
+                OriginDocumentsSub = _originDocumentsSub,
+                ContractCustomer = SelectContractCustomer,
+                SubContractCustomeringCoefficients = _subContractCustomeringCoefficients,
             };
 
-                try
-                {
-                    bool result = await Task.Run(() => dataObjAdd.AddObjectAsync(newObject, Customer));
-                    if (result)
-                    {
-                        MessageBox.Show("Объект успешно создан!");
-                        CloseCurrentWindow();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Не удалось сохранить объект. Проверьте логи.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Ошибка: {ex.Message}");
-                }
-            }
-
-            private void CloseCurrentWindow()
+            try
             {
-                var activeWindow = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
-                if (activeWindow != null)
-                {
-                    activeWindow.Close();
-                }
+                await _objectService.AddAsync(newObject);
+                MessageBox.Show("Объект успешно создан!");
+                CloseCurrentWindow();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении объекта: {ex.Message}");
             }
         }
+
+        private void CloseCurrentWindow()
+        {
+            var activeWindow = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
+            activeWindow?.Close();
+        }
     }
-
-
+}

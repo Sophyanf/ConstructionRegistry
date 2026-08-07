@@ -1,42 +1,24 @@
-﻿
-using System.Windows.Input;
-
-using Window = System.Windows.Window;
+﻿using ConstructionRegistry.Services;
+using ConstructionRegistry.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using System.Windows;
 
 namespace ConstructionRegistry.Views
 {
-    /// <summary>
-    /// Логика взаимодействия для AddKontragentView.xaml
-    /// </summary>
-    public partial class AddKontragentView : Window
+    public partial class AddKontragentView : BaseWindowView
     {
         public AddKontragentView()
         {
             InitializeComponent();
-        }
-        public void NumberValidationTextBox(object sender, TextCompositionEventArgs e) {
 
+            var serviceProvider = App.ServiceProvider;
 
-            if (IsTextNumeric(e.Text))
-            {
-                e.Handled = true; // Пометьте событие как обработанное, чтобы предотвратить ввод символа
-            }
-    }
+            // Берём только один сервис — этого достаточно
+            var kontragentService = serviceProvider.GetRequiredService<IKontragentService>();
 
-    private bool IsTextNumeric(string text)
-        {
-            System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("[^0-9]");
-            return reg.IsMatch(text);
-        }
-
-        private void TextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-
-        }
-
-        private void TextBox_TextChanged_1(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-
+            // Передаём его в VM (конструктор теперь принимает один параметр)
+            var vm = new KontragentAddVM(kontragentService);
+            DataContext = vm;
         }
     }
 }
