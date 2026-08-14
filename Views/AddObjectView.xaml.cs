@@ -5,9 +5,9 @@ using System.Windows;
 
 namespace ConstructionRegistry.Views
 {
-    public partial class AddResponsiblPerson : BaseWindowView
+    public partial class AddObjectView: Window
     {
-        public AddResponsiblPerson()
+        public AddObjectView()
         {
             InitializeComponent();
 
@@ -24,6 +24,11 @@ namespace ConstructionRegistry.Views
             );
 
             DataContext = vm;
+        }
+
+        private void TextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
         }
     }
 }

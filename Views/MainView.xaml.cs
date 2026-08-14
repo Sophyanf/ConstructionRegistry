@@ -11,21 +11,20 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ConstructionRegistry.Controls;
 
 namespace ConstructionRegistry.Views
 {
     /// <summary>
     /// Логика взаимодействия для MainView.xaml
     /// </summary>
-    public partial class MainView : BaseWindowView
+    public partial class MainView : Window
     {
         public MainView()
         {
             InitializeComponent();
+            WindowActions.DragMove(this);
+            //WindowActions.CloseWindow(this);
         }
-
-       
-
-      
     }
 }

@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace ConstructionRegistry.Views
 {
-    public partial class AddKontragentView : BaseWindowView
+    public partial class AddKontragentView : Window
     {
         public AddKontragentView()
         {

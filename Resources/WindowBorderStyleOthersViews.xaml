@@ -2,139 +2,95 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:fa="http://schemas.fontawesome.io/icons/">
 
+    <!-- Кисть для фона окна -->
     <ImageBrush x:Key="WindBackgraund" ImageSource="pack://application:,,,/Resources/fon1.jpg"/>
 
-
+    <!-- Стиль окна -->
     <Style x:Key="WindowStyle" TargetType="Window">
-        
         <Setter Property="AllowsTransparency" Value="True"/>
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="AllowDrop" Value="True"/>
-        <Setter Property="FontFamily" Value="Segoe UI" />
-        <Setter Property="FontSize" Value="18" />
-        <Setter Property="TextElement.Foreground" Value="#1E90FF" />
-        <Setter Property="Background" Value="{ StaticResource WindBackgraund }" />
-      
+        <Setter Property="FontFamily" Value="Segoe UI"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="TextElement.Foreground" Value="#1E90FF"/>
+        <Setter Property="Background" Value="{StaticResource WindBackgraund}"/>
     </Style>
-    
-    <Style TargetType="Button" >
 
-        <Setter Property="Width" Value="120" />
-        <Setter Property="Height" Value="35" />
-        <Setter Property="Margin" Value="10,5,10,5" />
-        <Setter Property="Background" Value=" #CAD9EC" />
-        <Setter Property="BorderThickness" Value="1,1,1,1" />
+    <!-- Общий стиль кнопок (для обычных кнопок в формах) -->
+    <Style TargetType="Button">
+        <Setter Property="Width" Value="120"/>
+        <Setter Property="Height" Value="35"/>
+        <Setter Property="Margin" Value="10,5,10,5"/>
+        <Setter Property="Background" Value="#CAD9EC"/>
+        <!-- Исправлено: убрано дублирование BorderThickness -->
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="BorderBrush" Value=" #95C0D8" />
+        <Setter Property="BorderBrush" Value="#95C0D8"/>
         <Setter Property="Padding" Value="-4"/>
+        <Setter Property="Cursor" Value="Hand"/>
     </Style>
 
-    <Style TargetType="TextBox" >
-
+    <!-- Стили для полей ввода и комбобоксов (оставлены как у тебя) -->
+    <Style TargetType="TextBox">
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="BorderBrush" Value=" #95C0D8" />
-        <Setter Property="Background" Value="White" />
-        <Setter Property="FontFamily" Value="Times New Roman" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-       
+        <Setter Property="BorderBrush" Value="#95C0D8"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="FontFamily" Value="Times New Roman"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
 
-    <Style TargetType="ComboBox" >
-
+    <Style TargetType="ComboBox">
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="BorderBrush" Value=" #6397CE" />
-        <Setter Property="Background" Value="White" />
-        <Setter Property="FontFamily" Value="Times New Roman" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-
-
+        <Setter Property="BorderBrush" Value="#6397CE"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="FontFamily" Value="Times New Roman"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
 
-    <Style TargetType="Button" x:Key="MinimizeBtnStyle">
-   
-        <Setter Property="Width" Value="30" />
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Margin" Value="10,0,5,0" />
-        <Setter Property="BorderThickness" Value="1,1,1,1" />
-       
+    <!-- ШАБЛОН ДЛЯ КНОПОК ШАПКИ (ИСПРАВЛЕНО) -->
+    <ControlTemplate x:Key="HeaderButtonTemplate" TargetType="Button">
+        <Border x:Name="border" 
+                Background="{TemplateBinding Background}" 
+                Padding="5">
+            <!-- ВАЖНО: Foreground привязан к свойству кнопки. 
+                 Мы НЕ используем x:Name="PART_Content" -->
+            <TextBlock x:Name="icon"
+                       Text="{TemplateBinding Content}"
+                       FontFamily="Segoe MDL2 Assets"
+                       FontSize="16"
+                       Foreground="{TemplateBinding Foreground}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+        </Border>
 
-<Setter Property="Template">
-    <Setter.Value>
-        <ControlTemplate TargetType="Button">
-            <Border BorderThickness="1,1,1,1">
-                <TextBlock x:Name="minimizeBtn"
-                           Text="&#xF068;"
-                           FontFamily="Segoe UI Symbol"
-                           FontSize="16"
-                           Foreground="#CFDEEC"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"/>
-            </Border>
-        </ControlTemplate>
-    </Setter.Value>
-</Setter>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <!-- Меняем фон рамки -->
+                <Setter TargetName="border" Property="Background" Value="#4DFFFFFF"/>
 
-    </Style>
+                <!-- ГЛАВНОЕ ИСПРАВЛЕНИЕ: 
+                     Меняем Foreground у самой кнопки (TargetType), а не у несуществующего PART_Content.
+                     TextBlock внутри автоматически станет белым. -->
+                <Setter Property="Foreground" Value="#FFFFFF"/>
+            </Trigger>
 
-    <Style TargetType="Button" x:Key="MaximizeBtnStyle">
-      
-        <Setter Property="Width" Value="30" />
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Margin" Value="10,0,5,0" />
-        <Setter Property="BorderThickness" Value="1,1,1,1" />
-      
-<Setter Property="Template">
-    <Setter.Value>
-        <ControlTemplate TargetType="Button">
-            <Border BorderThickness="{TemplateBinding BorderThickness}">
-                <TextBlock x:Name="iconText"
-                           Text="&#xF065;"
-                           FontFamily="Segoe UI Symbol"
-                           FontSize="16"
-                           Foreground="#CFDEEC"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"/>
-            </Border>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="border" Property="Background" Value="#99FFFFFF"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
 
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="iconText" Property="Foreground" Value="#FFFFFF"/>
-                </Trigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
-    </Setter.Value>
-</Setter>
-    </Style>
-
-    <Style TargetType="Button" x:Key="CloseWindowBtnStyle">
-        
-        <Setter Property="Width" Value="30" />
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Margin" Value="10,0,0,0" />
-        <Setter Property="BorderThickness" Value="1,1,1,1" />
-        
-<Setter Property="Template">
-    <Setter.Value>
-        <ControlTemplate TargetType="Button">
-            <Border BorderThickness="{TemplateBinding BorderThickness}">
-                <TextBlock x:Name="closeBtn"
-                           Text="&#xF00D;"
-                           FontFamily="Segoe UI Symbol"
-                           FontSize="16"
-                           Foreground="#CFDEEC"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"/>
-            </Border>
-
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter TargetName="closeBtn" Property="Foreground" Value="#FFFFFF"/>
-                </Trigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
-    </Setter.Value>
-</Setter>
+    <!-- Базовый стиль для кнопок шапки -->
+    <Style x:Key="BaseHeaderBtnStyle" TargetType="Button">
+        <Setter Property="Width" Value="30"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="#CFDEEC"/>
+        <!-- Цвет по умолчанию -->
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template" Value="{StaticResource HeaderButtonTemplate}"/>
+        <Setter Property="ToolTip" Value="Кнопка"/>
     </Style>
 </ResourceDictionary>

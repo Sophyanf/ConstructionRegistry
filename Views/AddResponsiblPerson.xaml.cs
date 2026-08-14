@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace ConstructionRegistry.Views
 {
-    public partial class AddResponsiblPerson : BaseWindowView
+    public partial class AddResponsiblPerson : Window
     {
         public AddResponsiblPerson()
         {

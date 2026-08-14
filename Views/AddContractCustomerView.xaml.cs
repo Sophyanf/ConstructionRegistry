@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace ConstructionRegistry.Views
 {
-    public partial class AddContractCustomerView : BaseWindowView
+    public partial class AddContractCustomerView: Window
     {
         public AddContractCustomerView()
         {

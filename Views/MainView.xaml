@@ -6,17 +6,12 @@
         xmlns:local="clr-namespace:ConstructionRegistry.Views"
         mc:Ignorable="d"
         xmlns:vm="clr-namespace:ConstructionRegistry.ViewModels"
-        d:DataContext="{d:DesignInstance Type=vm:MainViewVM}"
         Style="{StaticResource WindowStyle}" 
         Height = "{Binding  ScreenHeight}" Width="{Binding ScreenWidth}"
         WindowStartupLocation="Manual" 
         Left="0" Top="0"
          >
 
-
-    <Window.DataContext>
-        <vm:MainViewVM x:Name="MainViewVM"></vm:MainViewVM>
-    </Window.DataContext>
 
     <Grid Background="Transparent" >
         <Grid.RowDefinitions>
@@ -35,17 +30,7 @@
                     
                 </StackPanel>
                 <Image Source ="pack://application:,,,/Resources/logoNGM.png" />
-                <StackPanel  Margin="0,15,20,0" Orientation="Horizontal"  HorizontalAlignment ="Right" VerticalAlignment="Top">
-                    <Button Style="{StaticResource ResourceKey=MinimizeBtnStyle}"
-                     Command="{Binding WindowMinimizeCommand}"
-                     />
-                    <Button Style="{StaticResource ResourceKey=MaximizeBtnStyle}"
-                     Command="{Binding WindowMaximizeCommand}"
-                     />
-                    <Button Style="{StaticResource ResourceKey=CloseWindowBtnStyle}"
-                     Command="{Binding CloseWindowCommand}"
-                     />
-                </StackPanel>
+           
             </DockPanel>
             
             
