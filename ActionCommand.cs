@@ -9,26 +9,27 @@ namespace ConstructionRegistry
 {
     public class ActionCommand : ICommand
     {
-        private readonly Action<object> execute;
-        private readonly Func<object, bool> canExecute;
+        private readonly Action<object?> execute;
+        private readonly Func<object?, bool>? canExecute;
 
-        public event EventHandler CanExecuteChanged
+        public event EventHandler? CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
         }
-        public ActionCommand(Action<object> execute, Func<object, bool> canExecute = null)
+
+        public ActionCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
         {
-            this.execute = execute;
+            this.execute = execute ?? throw new ArgumentNullException(nameof(execute));
             this.canExecute = canExecute;
         }
 
-        public bool CanExecute(object parameter)
+        public bool CanExecute(object? parameter)
         {
-            return canExecute == null || canExecute(parameter);
+            return canExecute?.Invoke(parameter) ?? true;
         }
 
-        public void Execute(object parameter)
+        public void Execute(object? parameter)
         {
             execute(parameter);
         }

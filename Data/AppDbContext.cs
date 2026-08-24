@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ConstructionRegistry.Models;
 
-namespace ConstructionRegistry
+namespace ConstructionRegistry.Data
 {
     public class AppDbContext : DbContext
     {
