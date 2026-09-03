@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace ConstructionRegistry.Views
 {
-    public partial class MainView : UserControl
+    public partial class MainView : Window
     {
         public MainView()
         {

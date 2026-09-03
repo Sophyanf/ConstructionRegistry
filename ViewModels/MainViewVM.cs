@@ -13,30 +13,32 @@ namespace ConstructionRegistry.ViewModels
     {
         private readonly IConstructionObjectService _objectService;
         private readonly IResponsiblPersonService _personService;
+        private readonly IWindowNavigator _navigator;  // ← добавили
 
-        // Эти коллекции должны быть публичными свойствами, чтобы биндились в XAML
         public ObservableCollection<ConstructionObject> ObjectsList { get; } = new();
         public ObservableCollection<ResponsiblPerson> PersonsList { get; } = new();
 
-        public ConstructionObject? SelectObject { get; set; } // привязка SelectedItem в DataGrid
+        public ConstructionObject? SelectObject { get; set; }
         public ResponsiblPerson? SelectPerson { get; set; }
 
         public ActionCommand AddNewObjectDB { get; }
         public ActionCommand AddPersonDB { get; }
         public ActionCommand RemoveObjectDB { get; }
 
+        // Добавили IWindowNavigator в параметры конструктора
         public MainViewVM(
             IConstructionObjectService objectService,
-            IResponsiblPersonService personService)
+            IResponsiblPersonService personService,
+            IWindowNavigator navigator)              // ← вот сюда
         {
             _objectService = objectService;
             _personService = personService;
+            _navigator = navigator;                   // ← сохранили
 
             AddNewObjectDB = new ActionCommand(_ => AddNewObject());
             AddPersonDB = new ActionCommand(_ => AddPerson());
             RemoveObjectDB = new ActionCommand(_ => RemoveObject());
 
-            // Инициализация коллекций уже сделана выше через инициализатор
             LoadObjectsAsync();
             LoadPersonsAsync();
         }
@@ -74,22 +76,30 @@ namespace ConstructionRegistry.ViewModels
 
         private void AddNewObject()
         {
-            // В MVVM не принято делать new View прямо в ViewModel.
-            // Самый простой вариант без отдельного NavigationService — через событие или callback.
-            // Для твоего текущего уровня — можно оставить вызов ShowDialog через локальную переменную,
-            // но вынести его в отдельный метод или сервис.
-            var addObjectWindow = new AddObjectView();
-            addObjectWindow.ShowDialog();
+            // Было:
+            // var addObjectWindow = new AddObjectView();
+            // addObjectWindow.ShowDialog();
+            // LoadObjectsAsync();
 
-            // После закрытия окна нужно обновить список
-            LoadObjectsAsync();
+            // Стало:
+            if (_navigator.ShowModal<AddObjectView>())
+            {
+                LoadObjectsAsync();  // Обновляем только если окно вернуло true
+            }
         }
 
         private void AddPerson()
         {
-            var addResponsiblPersonWindow = new Views.AddResponsiblPerson();
-            addResponsiblPersonWindow.ShowDialog();
-            LoadPersonsAsync();
+            // Было:
+            // var addResponsiblPersonWindow = new Views.AddResponsiblPerson();
+            // addResponsiblPersonWindow.ShowDialog();
+            // LoadPersonsAsync();
+
+            // Стало:
+            if (_navigator.ShowModal<AddResponsiblPerson>())
+            {
+                LoadPersonsAsync();
+            }
         }
 
         private async void RemoveObject()

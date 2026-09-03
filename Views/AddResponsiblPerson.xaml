@@ -20,16 +20,7 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Orientation="Vertical" Background="Transparent" Grid.RowSpan="2">
-            <DockPanel Background="Transparent" HorizontalAlignment="Stretch" Height="60" VerticalAlignment="Center">
-                <StackPanel Margin="20,15,20,0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Image Source="pack://application:,,,/Resources/logoNGM.png" />
-                </StackPanel>
-                <StackPanel Margin="0,15,20,0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Button Style="{StaticResource MinimizeBtnStyle}" Command="{Binding WindowMinimizeCommand}" />
-                    <Button Style="{StaticResource MaximizeBtnStyle}" Command="{Binding WindowMaximizeCommand}" />
-                    <Button Style="{StaticResource CloseWindowBtnStyle}" Command="{Binding CloseWindowCommand}" />
-                </StackPanel>
-            </DockPanel>
+       
 
             <StackPanel Orientation="Vertical" Margin="20,10,20,20" Background="White">
                 <Label Height="30" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Данные должностного лица" />

@@ -5,6 +5,8 @@
     <!-- Кисть для фона окна -->
     <ImageBrush x:Key="WindBackgraund" ImageSource="pack://application:,,,/Resources/fon1.jpg"/>
 
+    <BitmapImage x:Key="AppLogo" UriSource="pack://application:,,,/Resources/logoNGM.png"/>
+
     <!-- Стиль окна -->
     <Style x:Key="WindowStyle" TargetType="Window">
         <Setter Property="AllowsTransparency" Value="True"/>
@@ -15,6 +17,25 @@
         <Setter Property="TextElement.Foreground" Value="#1E90FF"/>
         <Setter Property="Background" Value="{StaticResource WindBackgraund}"/>
     </Style>
+
+    <Style TargetType="{x:Type DataGridColumnHeader}">
+        <Setter Property="ContentTemplate">
+            <Setter.Value>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" 
+                           TextWrapping="Wrap" 
+                           TextAlignment="Center" 
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center"
+                           Padding="5"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+        <!-- Важно: увеличиваем высоту шапки, иначе текст обрежется -->
+        <Setter Property="Height" Value="60"/>
+        <Setter Property="MinWidth" Value="50"/>
+    </Style>
+
 
     <!-- Общий стиль кнопок (для обычных кнопок в формах) -->
     <Style TargetType="Button">
@@ -48,49 +69,27 @@
         <Setter Property="VerticalContentAlignment" Value="Center"/>
     </Style>
 
-    <!-- ШАБЛОН ДЛЯ КНОПОК ШАПКИ (ИСПРАВЛЕНО) -->
-    <ControlTemplate x:Key="HeaderButtonTemplate" TargetType="Button">
-        <Border x:Name="border" 
-                Background="{TemplateBinding Background}" 
-                Padding="5">
-            <!-- ВАЖНО: Foreground привязан к свойству кнопки. 
-                 Мы НЕ используем x:Name="PART_Content" -->
-            <TextBlock x:Name="icon"
-                       Text="{TemplateBinding Content}"
-                       FontFamily="Segoe MDL2 Assets"
-                       FontSize="16"
-                       Foreground="{TemplateBinding Foreground}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"/>
-        </Border>
-
-        <ControlTemplate.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <!-- Меняем фон рамки -->
-                <Setter TargetName="border" Property="Background" Value="#4DFFFFFF"/>
-
-                <!-- ГЛАВНОЕ ИСПРАВЛЕНИЕ: 
-                     Меняем Foreground у самой кнопки (TargetType), а не у несуществующего PART_Content.
-                     TextBlock внутри автоматически станет белым. -->
-                <Setter Property="Foreground" Value="#FFFFFF"/>
-            </Trigger>
-
-            <Trigger Property="IsPressed" Value="True">
-                <Setter TargetName="border" Property="Background" Value="#99FFFFFF"/>
-            </Trigger>
-        </ControlTemplate.Triggers>
-    </ControlTemplate>
-
-    <!-- Базовый стиль для кнопок шапки -->
+    <!-- ШАБЛОН ДЛЯ КНОПОК ШАПКИ  -->
     <Style x:Key="BaseHeaderBtnStyle" TargetType="Button">
-        <Setter Property="Width" Value="30"/>
-        <Setter Property="Height" Value="30"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="#CFDEEC"/>
-        <!-- Цвет по умолчанию -->
+        <Setter Property="Width" Value="36"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="Background" Value="#4d95cf"/> 
+        <Setter Property="BorderThickness" Value="5"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template" Value="{StaticResource HeaderButtonTemplate}"/>
-        <Setter Property="ToolTip" Value="Кнопка"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 </ResourceDictionary>
