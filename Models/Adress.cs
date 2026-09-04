@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConstructionRegistry.Models
 {
-    public class Address
+    public class Adress
     {
         public int ID { get; set; }
         public String? Region { get; set; }

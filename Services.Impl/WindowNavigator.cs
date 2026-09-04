@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace ConstructionRegistry.Services
+namespace ConstructionRegistry.Services.Impl
 {
     public class WindowNavigator : IWindowNavigator
     {

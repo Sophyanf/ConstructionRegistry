@@ -9,21 +9,18 @@ namespace ConstructionRegistry.Views
     {
         public AddObjectView()
         {
-            InitializeComponent();
-
-            var sp = App.ServiceProvider;
-
-            // Получаем сервисы в ТОЧНОМ порядке, как требует конструктор VM
-            var responsiblPersonService = sp.GetRequiredService<IResponsiblPersonService>();
-            var kontragentService = sp.GetRequiredService<IKontragentService>();
-
-            // Передаём их в том же порядке: сначала IResponsiblPersonService, потом IKontragentService
-            var vm = new ResponsiblPersonVM(
-                responsiblPersonService,
-                kontragentService
-            );
-
-            DataContext = vm;
+            try
+            {
+                InitializeComponent();
+                var sp = App.ServiceProvider;
+                var responsiblPersonService = sp.GetRequiredService<IResponsiblPersonService>();
+                var kontragentService = sp.GetRequiredService<IKontragentService>();
+                DataContext = new ResponsiblPersonVM(responsiblPersonService, kontragentService);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}");
+            }
         }
 
         private void TextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)

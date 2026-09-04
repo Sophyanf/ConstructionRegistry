@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:ConstructionRegistry.Controls"
+        xmlns:viewmodels="clr-namespace:ConstructionRegistry.ViewModels"
+        mc:Ignorable="d"
         Style="{StaticResource WindowStyle}"
         Width="1500" Height="900">
     <Grid Background="Transparent">

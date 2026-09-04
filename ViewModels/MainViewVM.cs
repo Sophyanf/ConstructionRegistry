@@ -1,132 +1,97 @@
-﻿using ConstructionRegistry.Models;
+﻿using ConstructionRegistry;
+using ConstructionRegistry.Models;
 using ConstructionRegistry.Services;
+using ConstructionRegistry.ViewModels;
 using ConstructionRegistry.Views;
-using System;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows;
-using Application = System.Windows.Application;
 
-namespace ConstructionRegistry.ViewModels
+public class MainViewVM : BaseViewModel
 {
-    public class MainViewVM : BaseViewModel
+    private readonly IConstructionObjectService _objectService;
+    private readonly IResponsiblPersonService _personService;
+    public ObservableCollection<ConstructionObject> ObjectsList { get; } = new();
+    public ObservableCollection<ResponsiblPerson> PersonsList { get; } = new();
+    public ConstructionObject? SelectObject { get; set; }
+    public ResponsiblPerson? SelectPerson { get; set; }
+    public ActionCommand AddNewObjectDB { get; }
+    public ActionCommand AddPersonDB { get; }
+    public ActionCommand RemoveObjectDB { get; }
+    private readonly IWindowNavigator _navigator; // новое поле
+    public MainViewVM(
+        IConstructionObjectService objectService,
+        IResponsiblPersonService personService,
+        IWindowNavigator navigator)
     {
-        private readonly IConstructionObjectService _objectService;
-        private readonly IResponsiblPersonService _personService;
-        private readonly IWindowNavigator _navigator;  // ← добавили
-
-        public ObservableCollection<ConstructionObject> ObjectsList { get; } = new();
-        public ObservableCollection<ResponsiblPerson> PersonsList { get; } = new();
-
-        public ConstructionObject? SelectObject { get; set; }
-        public ResponsiblPerson? SelectPerson { get; set; }
-
-        public ActionCommand AddNewObjectDB { get; }
-        public ActionCommand AddPersonDB { get; }
-        public ActionCommand RemoveObjectDB { get; }
-
-        // Добавили IWindowNavigator в параметры конструктора
-        public MainViewVM(
-            IConstructionObjectService objectService,
-            IResponsiblPersonService personService,
-            IWindowNavigator navigator)              // ← вот сюда
+        _objectService = objectService;
+        _personService = personService;
+        _navigator = navigator;
+        AddNewObjectDB = new ActionCommand(_ => AddNewObject());
+        AddPersonDB = new ActionCommand(_ => AddPerson());
+        RemoveObjectDB = new ActionCommand(_ => RemoveObject());
+        LoadObjectsAsync();
+        LoadPersonsAsync();
+    }
+    private async Task LoadAllDataAsync()
+    {
+        await LoadObjectsAsync();
+        await LoadPersonsAsync();
+    }
+    private async Task LoadObjectsAsync() // из void → Task
+    {
+        try
         {
-            _objectService = objectService;
-            _personService = personService;
-            _navigator = navigator;                   // ← сохранили
-
-            AddNewObjectDB = new ActionCommand(_ => AddNewObject());
-            AddPersonDB = new ActionCommand(_ => AddPerson());
-            RemoveObjectDB = new ActionCommand(_ => RemoveObject());
-
+            var list = await _objectService.GetAllWithCustomerAsync();
+            ObjectsList.Clear();
+            foreach (var item in list) ObjectsList.Add(item);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ошибка: {ex.Message}");
+        }
+    }
+    private async Task LoadPersonsAsync() // из void → Task
+    {
+        try
+        {
+            var list = await _personService.GetAllByKontragentAsync(0);
+            PersonsList.Clear();
+            foreach (var item in list) PersonsList.Add(item);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ошибка загрузки лиц: {ex.Message}");
+        }
+    }
+    private void AddNewObject()
+    {
+        if (_navigator.ShowModal<AddObjectView>())
+        {
             LoadObjectsAsync();
+        }
+    }
+    private void AddPerson()
+    {
+        if (_navigator.ShowModal<AddResponsiblPerson>())
+        {
             LoadPersonsAsync();
         }
-
-        private async void LoadObjectsAsync()
+    }
+    private async void RemoveObject()
+    {
+        if (SelectObject == null) return;
+        var result = MessageBox.Show(
+            $"Удалить объект \"{SelectObject.ObjectName}\"?",
+            "Подтверждение", MessageBoxButton.YesNo);
+        if (result != MessageBoxResult.Yes) return;
+        try
         {
-            try
-            {
-                var list = await _objectService.GetAllWithCustomerAsync();
-                ObjectsList.Clear();
-                foreach (var item in list) ObjectsList.Add(item);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка загрузки объектов: {ex.Message}");
-            }
+            await _objectService.RemoveAsync(SelectObject.ID);
+            LoadObjectsAsync();
         }
-
-        private async void LoadPersonsAsync()
+        catch (Exception ex)
         {
-            try
-            {
-                // Если у сервиса есть метод GetAllAsync — используй его.
-                // Здесь я делаю заглушку: если такого метода нет, добавь его в IResponsiblPersonService
-                // и реализацию в ResponsiblPersonService аналогично другим сервисам.
-                var list = await _personService.GetAllByKontragentAsync(0); // 0 — заглушка, если нужен фильтр
-                PersonsList.Clear();
-                foreach (var item in list) PersonsList.Add(item);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка загрузки ответственных лиц: {ex.Message}");
-            }
-        }
-
-        private void AddNewObject()
-        {
-            // Было:
-            // var addObjectWindow = new AddObjectView();
-            // addObjectWindow.ShowDialog();
-            // LoadObjectsAsync();
-
-            // Стало:
-            if (_navigator.ShowModal<AddObjectView>())
-            {
-                LoadObjectsAsync();  // Обновляем только если окно вернуло true
-            }
-        }
-
-        private void AddPerson()
-        {
-            // Было:
-            // var addResponsiblPersonWindow = new Views.AddResponsiblPerson();
-            // addResponsiblPersonWindow.ShowDialog();
-            // LoadPersonsAsync();
-
-            // Стало:
-            if (_navigator.ShowModal<AddResponsiblPerson>())
-            {
-                LoadPersonsAsync();
-            }
-        }
-
-        private async void RemoveObject()
-        {
-            if (SelectObject == null)
-            {
-                MessageBox.Show("Выберите объект для удаления.");
-                return;
-            }
-
-            var result = MessageBox.Show(
-                $"Вы уверены, что хотите удалить объект \"{SelectObject.ObjectName}\"?",
-                "Подтверждение удаления",
-                MessageBoxButton.YesNo);
-
-            if (result != MessageBoxResult.Yes) return;
-
-            try
-            {
-                await _objectService.RemoveAsync(SelectObject.ID);
-                MessageBox.Show("Объект удалён.");
-                LoadObjectsAsync();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Не удалось удалить объект: {ex.Message}");
-            }
+            MessageBox.Show($"Ошибка удаления: {ex.Message}");
         }
     }
 }

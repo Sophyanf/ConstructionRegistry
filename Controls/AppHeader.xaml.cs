@@ -3,13 +3,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 namespace ConstructionRegistry.Controls
 {
-    public partial class AppHeader : Window
+    public partial class AppHeader : UserControl
     {
         public AppHeader()
         {
             InitializeComponent();
         }
-        // Заголовок окна, который будет отображаться в центре шапки
         public string Title
         {
             get { return (string)GetValue(TitleProperty); }
@@ -17,7 +16,6 @@ namespace ConstructionRegistry.Controls
         }
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register("Title", typeof(string), typeof(AppHeader), new PropertyMetadata(""));
-        // Методы кнопок работают с окном, в котором находится этот контрол
         private void BtnMinimize_Click(object sender, RoutedEventArgs e)
         {
             Window window = Window.GetWindow(this);
@@ -33,10 +31,8 @@ namespace ConstructionRegistry.Controls
         }
         private void BtnClose_Click(object sender, RoutedEventArgs e)
         {
-            Window window = Window.GetWindow(this);
-            window?.Close();
+            Window.GetWindow(this)?.Close();
         }
-        // Перетаскивание окна
         private void TitleBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)

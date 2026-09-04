@@ -11,7 +11,13 @@ namespace ConstructionRegistry.Models
     {
         public int ID { get; set; }    
         public string ObjectName { get; set; } 
-        public Address? ObjectAddress { get; set; }     //связь 1:1
+
+        public Adress? ObjectAddress { get; set; }     //связь 1:1
+                                                       // Внешние ключи
+        public int ConstructionOrganizationId { get; set; }
+        public int CustomerId { get; set; }
+        public int? ConstructionOrganizationSubId { get; set; }
+        // Навигационные свойства (остаются)
         public Kontragent ConstructionOrganization { get; set; } //Подрядчик НГМ //связь 1:1
         public Kontragent? ConstructionOrganizationSub { get; set; } //Субподрядчик //связь 1:1
         public Kontragent Customer { get; set; } //Заказчик //связь 1:1
